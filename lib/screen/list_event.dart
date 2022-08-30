@@ -1,4 +1,9 @@
+import 'dart:developer';
+import 'dart:io';
+
 import 'package:flutter/material.dart';
+import 'package:remind/controller/event.dart';
+import 'package:remind/models/event.dart';
 
 class ListEvent extends StatefulWidget {
   const ListEvent({ Key? key }) : super(key: key);
@@ -8,6 +13,34 @@ class ListEvent extends StatefulWidget {
 }
 
 class _ListEventState extends State<ListEvent> {
+  List<EventRespons> _eventData = [];
+
+  @override
+  void initState() {
+    super.initState();
+    _getEventData();
+  }
+
+  void _getEventData() async {
+    try{
+      var eventData = await events();
+      setState(() {
+        _eventData = eventData;
+      });
+    } catch (e) {
+      print(e);
+    }
+  }
+
+  void _createEvent() async {
+    try{
+      var test = Event("namer", "tesr");
+      await insertEvent(test);
+    } catch (e){
+      print(e);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -33,32 +66,38 @@ class _ListEventState extends State<ListEvent> {
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: (){
-          Navigator.pushNamed(context, '/home');
+          _createEvent();
+          _getEventData();
         },
         child: Icon(Icons.add),
       ),
-      body: Padding(
-        padding: EdgeInsets.all(20),
-        child: SizedBox.expand(
-          child: Column(
-          mainAxisAlignment: MainAxisAlignment.start,
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            Container(
-              width: MediaQuery.of(context).size.width * 0.9,
-              height: MediaQuery.of(context).size.width * 0.3,
-              color: Colors.orange,
-            ),
-            SizedBox(height: 20,),
-            Container(
-              width: MediaQuery.of(context).size.width * 0.9,
-              height: MediaQuery.of(context).size.width * 0.3,
-              color: Colors.orange,
-            ),
-          ],
-        )
-        )
-      ),
-    );
+      body: ListView.builder(
+            padding: EdgeInsets.all(8),
+            itemCount: _eventData.length,
+            itemBuilder: (BuildContext context, int index) {
+              final event = _eventData[index];
+              return Dismissible(
+                key: UniqueKey(), 
+                onDismissed: (direction) {
+                  setState(() {
+                    deleteEvent(event.id);
+                    _eventData.removeAt(index);
+                  });
+                },
+                child: Container(
+                  height: 50,
+                  color: Colors.orange,
+                  child: Column(
+                    children: [
+                      Text(event.id.toString()),
+                      Text(event.name),
+                      Text(event.time),
+                    ],
+                  ),
+                )
+              );
+            },
+          ),
+      );
   }
 }

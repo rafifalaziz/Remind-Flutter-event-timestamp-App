@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:remind/controller/event.dart';
+import 'package:remind/models/event.dart';
 import 'package:remind/screen/list_event.dart';
 
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
   runApp(MyApp());
 }
 
@@ -26,7 +29,6 @@ class MyApp extends StatelessWidget {
       initialRoute: '/',
       routes: {
         '/': (context) => const ListEvent(),
-        '/home': (context) => MyHomePage(title: "title"),
       },
     );
   }
@@ -51,9 +53,28 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
+  List<Event> _eventData = [];
+
+  @override
+  void initState() {
+    super.initState();
+    _getEventData();
+  }
+
+  void _getEventData() async {
+    try{
+      var eventData = await events();
+      setState(() {
+        _eventData = eventData;
+      });
+    } catch (e) {
+      print(e);
+    }
+  }
+
   int _counter = 0;
 
-  void _incrementCounter() {
+  void _incrementCounter() async {
     setState(() {
       // This call to setState tells the Flutter framework that something has
       // changed in this State, which causes it to rerun the build method below
@@ -103,6 +124,10 @@ class _MyHomePageState extends State<MyHomePage> {
             ),
             Text(
               '$_counter',
+              style: Theme.of(context).textTheme.headline4,
+            ),
+            Text(
+              _eventData[0].name,
               style: Theme.of(context).textTheme.headline4,
             ),
           ],
