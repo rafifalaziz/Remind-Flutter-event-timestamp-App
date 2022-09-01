@@ -1,9 +1,7 @@
-import 'dart:developer';
-import 'dart:io';
-
 import 'package:flutter/material.dart';
 import 'package:remind/controller/event.dart';
 import 'package:remind/models/event.dart';
+import 'package:remind/screen/add_event.dart';
 
 class ListEvent extends StatefulWidget {
   const ListEvent({ Key? key }) : super(key: key);
@@ -34,7 +32,7 @@ class _ListEventState extends State<ListEvent> {
 
   void _createEvent() async {
     try{
-      var test = Event("namer", "tesr");
+      var test = Event("gogo", "tesr");
       await insertEvent(test);
     } catch (e){
       print(e);
@@ -66,8 +64,9 @@ class _ListEventState extends State<ListEvent> {
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: (){
-          _createEvent();
-          _getEventData();
+          Navigator.pushNamed(context, '/add');
+          // _createEvent();
+          // _getEventData();
         },
         child: Icon(Icons.add),
       ),
